@@ -9,7 +9,7 @@ ANSIBLE_NAVIGATOR_VERSION=26.11.0
 
 echo ">> Installing podman, git, python tooling"
 sudo apt-get update
-sudo apt-get install -y podman buildah skopeo git make jq python3-venv pipx uidmap slirp4netns fuse-overlayfs
+sudo apt-get install -y build-essential python3-dev libonig-dev podman buildah skopeo git make jq python3-venv pipx uidmap slirp4netns fuse-overlayfs
 
 echo ">> Rootless podman: make sure subuid/subgid ranges exist for $USER"
 grep -q "^$USER:" /etc/subuid || sudo usermod --add-subuids 100000-165535 "$USER"
