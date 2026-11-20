@@ -25,7 +25,7 @@ ansible-builder build \
   --tag "${IMAGE}:${VERSION}" \
   --build-arg EE_VERSION="${VERSION}" \
   --build-arg VCS_REF="${VCS_REF}" \
-  --verbosity 2
+  --verbosity 3
 
 echo ">> Smoke test"
 "${RUNTIME}" run --rm "${IMAGE}:${VERSION}" ee-smoke-test
