@@ -1,0 +1,42 @@
+---
+# Ansible collections for the NaC execution environment.
+# Exact versions only. Collections that ship a requirements.txt (e.g. paloaltonetworks.panos)
+# get their Python deps merged by ansible-builder - those are also pinned in requirements.txt.
+collections:
+  # Core / shared plumbing
+  - name: ansible.netcommon
+    version: "8.8.0"
+  - name: ansible.utils
+    version: "6.1.1"
+  - name: ansible.posix
+    version: "2.2.2"
+  - name: community.general
+    version: "14.0.1"
+
+  # Cisco
+  - name: cisco.ios
+    version: "11.7.0"
+  - name: cisco.nxos
+    version: "14.0.0"
+  - name: cisco.iosxr
+    version: "13.0.1"
+
+  # Arista
+  - name: arista.eos
+    version: "12.3.0"
+
+  # Juniper
+  - name: junipernetworks.junos
+    version: "11.0.0"
+
+  # Firewalls
+  - name: paloaltonetworks.panos
+    version: "3.4.2"
+  - name: fortinet.fortios
+    version: "2.6.0"
+
+  # DDI / Source of truth
+  - name: infoblox.nios_modules
+    version: "1.10.0"
+  - name: netbox.netbox
+    version: "3.24.0"

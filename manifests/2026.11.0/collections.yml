@@ -1,0 +1,29 @@
+/usr/share/ansible/collections/ansible_collections:
+  ansible.netcommon:
+    version: 8.8.0
+  ansible.posix:
+    version: 2.2.2
+  ansible.utils:
+    version: 6.1.1
+  arista.eos:
+    version: 12.3.0
+  cisco.ios:
+    version: 11.7.0
+  cisco.iosxr:
+    version: 13.0.1
+  cisco.nxos:
+    version: 14.0.0
+  community.general:
+    version: 14.0.1
+  community.library_inventory_filtering_v1:
+    version: 1.1.5
+  fortinet.fortios:
+    version: 2.6.0
+  infoblox.nios_modules:
+    version: 1.10.0
+  junipernetworks.junos:
+    version: 11.0.0
+  netbox.netbox:
+    version: 3.24.0
+  paloaltonetworks.panos:
+    version: 3.4.2

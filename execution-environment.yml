@@ -1,0 +1,65 @@
+---
+# NaC execution environment - built with ansible-builder v3.
+#   ansible-builder build -f execution-environment.yml -t nac-ee:<version>
+# Everything that can float is pinned here or in dependencies/.
+version: 3
+
+images:
+  base_image:
+    # Fedora 42 ships Python 3.13, which ansible-core 2.22 requires.
+    name: registry.fedoraproject.org/fedora:42
+
+dependencies:
+  python_interpreter:
+    package_system: python3
+    python_path: /usr/bin/python3
+  ansible_core:
+    package_pip: ansible-core==2.22.0
+  ansible_runner:
+    package_pip: ansible-runner==2.4.3
+  galaxy: dependencies/requirements.yml
+  python: dependencies/requirements.txt
+  system: dependencies/bindep.txt
+
+options:
+  package_manager_path: /usr/bin/dnf
+  tags:
+    - nac-ee:dev
+
+additional_build_files:
+  - src: files/smoke-test.sh
+    dest: scripts
+
+additional_build_steps:
+  prepend_base:
+    - RUN dnf -y upgrade --refresh && dnf -y install python3-pip && dnf clean all
+
+  append_final:
+    # ---- Terraform + TFLint (checksum-verified, arch-aware: x86_64 or aarch64) ----
+    - ARG TERRAFORM_VERSION=1.17.2
+    - ARG TFLINT_VERSION=0.66.0
+    - >-
+      RUN set -eux;
+      case "$(uname -m)" in x86_64) A=amd64;; aarch64) A=arm64;; *) echo "unsupported arch"; exit 1;; esac;
+      cd /tmp;
+      curl -fsSLO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${A}.zip;
+      curl -fsSLO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_SHA256SUMS;
+      grep " terraform_${TERRAFORM_VERSION}_linux_${A}.zip$" terraform_${TERRAFORM_VERSION}_SHA256SUMS | sha256sum -c -;
+      unzip -o terraform_${TERRAFORM_VERSION}_linux_${A}.zip terraform -d /usr/local/bin;
+      curl -fsSLO https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VERSION}/tflint_linux_${A}.zip;
+      curl -fsSL -o tflint_checksums.txt https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VERSION}/checksums.txt;
+      grep " tflint_linux_${A}.zip$" tflint_checksums.txt | sha256sum -c -;
+      unzip -o tflint_linux_${A}.zip tflint -d /usr/local/bin;
+      chmod 0755 /usr/local/bin/terraform /usr/local/bin/tflint;
+      rm -f /tmp/*.zip /tmp/*SHA256SUMS /tmp/tflint_checksums.txt
+    # ---- Build manifest: the exact resolved state of this image ----
+    - COPY _build/scripts/smoke-test.sh /usr/local/bin/ee-smoke-test
+    - >-
+      RUN set -eux; chmod 0755 /usr/local/bin/ee-smoke-test; mkdir -p /opt/ee-manifest;
+      python3 -m pip freeze --all > /opt/ee-manifest/pip-freeze.txt;
+      ansible-galaxy collection list --format yaml > /opt/ee-manifest/collections.yml;
+      { ansible --version; terraform version; tflint --version; } > /opt/ee-manifest/tools.txt 2>&1
+    - ARG EE_VERSION=dev
+    - ARG VCS_REF=unknown
+    - LABEL org.opencontainers.image.title="nac-ee" org.opencontainers.image.description="Network as Code execution environment" org.opencontainers.image.version="${EE_VERSION}" org.opencontainers.image.revision="${VCS_REF}"
+    - ENV ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_FORCE_COLOR=1 ANSIBLE_NETWORK_CLI_SSH_TYPE=libssh

@@ -1,0 +1,14 @@
+---
+# Drop this into your playbook repo so every run uses the pinned EE.
+#   ansible-navigator run site.yml -i inventory/
+ansible-navigator:
+  execution-environment:
+    enabled: true
+    container-engine: podman
+    image: ghcr.io/CHANGE-ME/nac-ee:2026.11.0   # pin the release tag, never :latest
+    pull:
+      policy: missing
+  mode: stdout
+  playbook-artifact:
+    enable: true
+    save-as: "artifacts/{playbook_name}-{time_stamp}.json"

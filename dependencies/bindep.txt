@@ -1,0 +1,22 @@
+# System packages (Fedora/RPM names). Format: <package> [platform:<selector>]
+# Build-time compilers are needed for any wheel that has to compile from source.
+gcc                [platform:rpm compile]
+python3-devel      [platform:rpm compile]
+libffi-devel       [platform:rpm compile]
+openssl-devel      [platform:rpm compile]
+libxml2-devel      [platform:rpm compile]
+libxslt-devel      [platform:rpm compile]
+libssh-devel       [platform:rpm compile]
+
+# Runtime
+git                [platform:rpm]
+openssh-clients    [platform:rpm]
+sshpass            [platform:rpm]
+rsync              [platform:rpm]
+iputils            [platform:rpm]
+bind-utils         [platform:rpm]
+unzip              [platform:rpm]
+jq                 [platform:rpm]
+libssh             [platform:rpm]
+libxml2            [platform:rpm]
+libxslt            [platform:rpm]
